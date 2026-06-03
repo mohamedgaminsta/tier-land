@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TierLands | Minecraft Rankings</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topbar">
+      <a class="logo" href="#top" aria-label="TierLands home">
+        <span class="logo-mc">TL</span><span>TIERS</span>
+      </a>
+
+      <nav class="topnav" aria-label="Main navigation">
+        <a href="#top" class="nav-link muted">Home</a>
+        <a href="#rankings" class="nav-link active">Rankings</a>
+        <a href="https://discord.gg/8FK78zEWGk" target="_blank" rel="noopener noreferrer" class="nav-link">Discord</a>
+        <a href="#footer" class="nav-link">Credits</a>
+      </nav>
+
+      <label class="search-box">
+        <span>Search</span>
+        <input id="searchInput" type="search" placeholder="Search player..." autocomplete="off">
+        <kbd>/</kbd>
+      </label>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Competitive Minecraft ranking hub</p>
+          <h1>Rank players by mode, region, and tier.</h1>
+          <p class="hero-copy">A sharp leaderboard inspired by PvP tier sites, built with its own identity and simple local data editing.</p>
+        </div>
+
+      </section>
+
+      <section id="rankings" class="rankings-card">
+        <div class="mode-tabs" id="modeTabs" role="tablist" aria-label="Game modes"></div>
+
+        <div class="rankings-toolbar">
+          <div>
+            <p class="eyebrow" id="activeModeLabel">Overall</p>
+            <h2 id="rankingTitle">Overall Rankings</h2>
+          </div>
+
+          <button class="info-button" id="infoButton" type="button">Information</button>
+        </div>
+
+        <div class="table-head">
+          <span>#</span>
+          <span>Player</span>
+          <span>Region</span>
+          <span>Tiers</span>
+        </div>
+
+        <div id="playerList" class="player-list" aria-live="polite"></div>
+      </section>
+    </main>
+
+    <footer id="footer" class="footer">
+      <p>Copyright &copy; 2026 TierLands. All Rights Reserved.</p>
+      <div class="footer-actions">
+        <button id="creditsButton" class="footer-button" type="button">Credits</button>
+        <a class="footer-button discord" href="https://discord.gg/8FK78zEWGk" target="_blank" rel="noopener noreferrer">Discord</a>
+      </div>
+    </footer>
+  </div>
+
+  <dialog id="infoDialog" class="modal">
+    <form method="dialog">
+      <h3>Rankings Information</h3>
+      <p><strong></strong> points, and mode tiers. Tiers use HT1 through LT5, with HT1 as the highest rank.</p>
+      <button class="dialog-button" value="close">Close</button>
+    </form>
+  </dialog>
+
+  <dialog id="creditsDialog" class="modal">
+    <form method="dialog">
+      <h3>Credits</h3>
+      <p>&copy; 2026 Mohamed. All Rights Reserved.</p>
+      <button class="dialog-button" value="close">Close</button>
+    </form>
+  </dialog>
+
+  <script src="players-data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
