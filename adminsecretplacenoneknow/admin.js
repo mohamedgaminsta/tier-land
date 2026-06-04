@@ -127,15 +127,20 @@ function hasPermission(permission) {
 }
 
 function setStatus(message, tone = "") {
-  if (!saveStatus) return;
+  if (!saveStatus) {
+    // Fallback if status element doesn't exist
+    alert(message);
+    return;
+  }
   saveStatus.textContent = message;
   saveStatus.dataset.tone = tone;
+  saveStatus.style.display = "block";
   // Add a temporary class to trigger a visual cue
   saveStatus.classList.add("status-active");
-  // Remove the class after a short delay
+  // Keep visible for longer on Render so user can read it
   setTimeout(() => {
     saveStatus.classList.remove("status-active");
-  }, 3000); // Remove after 3 seconds
+  }, 5000);
 }
 
 function setLoggedInUser(user) {
@@ -444,66 +449,85 @@ async function saveWithFilePicker(content) {
 }
 
 function downloadPlayersData(content) {
-  console.log("downloadPlayersData called. Initiating file download."); // Added for debugging
+  console.log("Starting file download...");
   try {
     const blob = new Blob([content], { type: "text/javascript" });
+    const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
+    link.href = url;
     link.download = "players-data.js";
+    link.style.display = "none";
     document.body.appendChild(link);
+    
+    // Trigger download
     link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(link.href);
-    console.log("File download completed successfully.");
+    console.log("Download triggered successfully");
+    
+    // Cleanup
+    setTimeout(() => {
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      console.log("Cleanup completed");
+    }, 100);
   } catch (error) {
     console.error("Download failed:", error);
-    throw new Error("Failed to download file. Please try again.");
+    throw new Error("Failed to download file: " + error.message);
   }
 }
 
 async function saveData() {
-  console.log("saveData function called."); // Added for debugging
+  console.log("saveData function called.");
   if (!hasPermission("save")) {
     setStatus("This username does not have save permission.", "error");
     return;
   }
 
   const content = createPlayersDataFile();
-  setStatus("Saving players-data.js...", "");
+  setStatus("Saving...", "");
+  console.log("Creating save content and attempting save...");
 
   try {
     // First attempt: Try local server (for local development)
+    console.log("Attempting local server save...");
     try {
       await saveWithLocalServer(content);
-      setStatus("Saved. Opening rankings...", "success");
-      window.location.href = "../index.html";
+      console.log("Local server save succeeded!");
+      setStatus("Saved successfully! Redirecting...", "success");
+      setTimeout(() => {
+        window.location.href = "../index.html";
+      }, 1000);
       return;
     } catch (serverError) {
-      console.log("Local server save failed:", serverError.message);
+      console.log("Local server not available:", serverError.message);
     }
 
-    // Second attempt: Try File System Access API (for modern browsers)
+    // Second attempt: Try File System Access API (for modern browsers with permission)
+    console.log("Attempting File System Access API save...");
     try {
       await saveWithFilePicker(content);
-      setStatus("Saved. Opening rankings...", "success");
-      window.location.href = "../index.html";
+      console.log("File picker save succeeded!");
+      setStatus("Saved successfully! Redirecting...", "success");
+      setTimeout(() => {
+        window.location.href = "../index.html";
+      }, 1000);
       return;
     } catch (pickerError) {
       if (pickerError?.name === "AbortError") {
-        setStatus("Save cancelled.", "error");
+        console.log("User cancelled file picker");
+        setStatus("Save cancelled.", "");
         return;
       }
-      console.log("File picker save failed:", pickerError.message);
+      console.log("File picker not available:", pickerError.message);
     }
 
-    // Final fallback: Manual download (works on all static hosts)
-    console.log("Proceeding to final fallback: manual download."); // Added for debugging
+    // Final fallback: Manual download (always works)
+    console.log("Using fallback: downloading file...");
     downloadPlayersData(content);
-    setStatus("Static host detected. 'players-data.js' downloaded. Upload this file to your hosting to apply changes.", "warning");
-    console.warn("Server API not found. This is normal for static hosts like Render.");
+    setStatus("⬇ Download started. Upload players-data.js to Render to apply changes.", "warning");
+    console.warn("Static host detected. File downloaded. User must manually upload to apply.");
   } catch (error) {
-    console.error("Unexpected error during save:", error);
-    setStatus("An unexpected error occurred. Please check the console and try again.", "error");
+    console.error("ERROR in saveData:", error);
+    setStatus("❌ Save failed: " + error.message, "error");
   }
 }
 
@@ -648,4 +672,3 @@ logoutButton.addEventListener("click", () => {
 });
 
 restoreSession();
-  
