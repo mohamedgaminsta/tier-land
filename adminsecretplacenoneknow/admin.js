@@ -401,11 +401,17 @@ window.TIERLANDS_PLAYERS = ${JSON.stringify(data.players, null, 2)};
 }
 
 async function saveWithLocalServer(content) {
-  const response = await fetch("../api/save", {
-    method: "POST",
-    headers: { "Content-Type": "text/plain;charset=utf-8" },
-    body: content
-  });
+  let response;
+  try {
+    response = await fetch("../api/save", {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: content
+    });
+  } catch (e) {
+    // Network error (server not running)
+    throw new Error("Local save server is not running.");
+  }
 
   if (!response.ok) {
     throw new Error(await response.text());
@@ -461,14 +467,17 @@ async function saveData() {
         return;
       }
     } catch (pickerError) {
-      if (pickerError && pickerError.name === "AbortError") {
+      if (pickerError?.name === "AbortError") {
         setStatus("Save cancelled.", "error");
         return;
       }
+      console.error("File Picker failed:", pickerError);
     }
 
+    // Final fallback: Manual download
     downloadPlayersData(content);
-    setStatus("Browser blocked direct file writing. A fresh players-data.js was downloaded instead.", "error");
+    setStatus("Static host detected. 'players-data.js' downloaded. Upload this file to your hosting to apply changes.", "warning");
+    console.warn("Server API not found. This is normal for static hosts like Render.");
   }
 }
 
