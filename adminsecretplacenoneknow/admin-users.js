@@ -18,12 +18,12 @@ window.TIERLANDS_ADMIN_USERS = [
     }
   },
   {
-    username: "viewer",
-    password: "viewer",
+    username: "byhju",
+    password: "mohamedlovebred ",
     permissions: {
-      players: false,
-      modes: false,
-      save: false
+      players: true,
+      modes: true,
+      save: true
     }
   }
 ];
