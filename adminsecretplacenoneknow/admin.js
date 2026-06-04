@@ -55,6 +55,7 @@ const loginStatus = document.querySelector("#loginStatus");
 const logoutButton = document.querySelector("#logoutButton");
 const adminUserBadge = document.querySelector("#adminUserBadge");
 const adminShell = document.querySelector(".admin-shell");
+const sessionUserKey = "tierlands-admin-user";
 
 const fields = {
   name: document.querySelector("#playerNameInput"),
@@ -71,6 +72,27 @@ function cloneJSON(value) {
 
 function getUsers() {
   return Array.isArray(window.TIERLANDS_ADMIN_USERS) ? window.TIERLANDS_ADMIN_USERS : [];
+}
+
+function readSessionUser() {
+  try {
+    return sessionStorage.getItem(sessionUserKey);
+  } catch (error) {
+    return "";
+  }
+}
+
+function writeSessionUser(username) {
+  try {
+    if (username) {
+      sessionStorage.setItem(sessionUserKey, username);
+    } else {
+      sessionStorage.removeItem(sessionUserKey);
+    }
+  } catch (error) {
+    // Some local-file or privacy-mode browser sessions block sessionStorage.
+    // Login should still unlock the page for the current tab.
+  }
 }
 
 function normalizePermissions(permissions) {
@@ -100,16 +122,16 @@ function setLoggedInUser(user) {
     : null;
 
   if (state.currentUser) {
-    sessionStorage.setItem("tierlands-admin-user", state.currentUser.username);
+    writeSessionUser(state.currentUser.username);
   } else {
-    sessionStorage.removeItem("tierlands-admin-user");
+    writeSessionUser("");
   }
 
   applyAuthState();
 }
 
 function restoreSession() {
-  const username = sessionStorage.getItem("tierlands-admin-user");
+  const username = readSessionUser();
   if (!username) {
     applyAuthState();
     return;
