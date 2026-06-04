@@ -130,6 +130,12 @@ function setStatus(message, tone = "") {
   if (!saveStatus) return;
   saveStatus.textContent = message;
   saveStatus.dataset.tone = tone;
+  // Add a temporary class to trigger a visual cue
+  saveStatus.classList.add("status-active");
+  // Remove the class after a short delay
+  setTimeout(() => {
+    saveStatus.classList.remove("status-active");
+  }, 3000); // Remove after 3 seconds
 }
 
 function setLoggedInUser(user) {
@@ -419,7 +425,9 @@ async function saveWithLocalServer(content) {
 }
 
 async function saveWithFilePicker(content) {
-  if (!window.showSaveFilePicker) return false;
+  if (!window.showSaveFilePicker) {
+    throw new Error("File System Access API not available.");
+  }
 
   const handle = await window.showSaveFilePicker({
     suggestedName: "players-data.js",
@@ -433,19 +441,28 @@ async function saveWithFilePicker(content) {
   const writable = await handle.createWritable();
   await writable.write(content);
   await writable.close();
-  return true;
 }
 
 function downloadPlayersData(content) {
-  const blob = new Blob([content], { type: "text/javascript" });
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(blob);
-  link.download = "players-data.js";
-  link.click();
-  URL.revokeObjectURL(link.href);
+  console.log("downloadPlayersData called. Initiating file download."); // Added for debugging
+  try {
+    const blob = new Blob([content], { type: "text/javascript" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "players-data.js";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+    console.log("File download completed successfully.");
+  } catch (error) {
+    console.error("Download failed:", error);
+    throw new Error("Failed to download file. Please try again.");
+  }
 }
 
 async function saveData() {
+  console.log("saveData function called."); // Added for debugging
   if (!hasPermission("save")) {
     setStatus("This username does not have save permission.", "error");
     return;
@@ -455,29 +472,38 @@ async function saveData() {
   setStatus("Saving players-data.js...", "");
 
   try {
-    await saveWithLocalServer(content);
-    setStatus("Saved. Opening rankings...", "success");
-    window.location.href = "../index.html";
-  } catch (serverError) {
+    // First attempt: Try local server (for local development)
     try {
-      const saved = await saveWithFilePicker(content);
-      if (saved) {
-        setStatus("Saved. Opening rankings...", "success");
-        window.location.href = "../index.html";
-        return;
-      }
+      await saveWithLocalServer(content);
+      setStatus("Saved. Opening rankings...", "success");
+      window.location.href = "../index.html";
+      return;
+    } catch (serverError) {
+      console.log("Local server save failed:", serverError.message);
+    }
+
+    // Second attempt: Try File System Access API (for modern browsers)
+    try {
+      await saveWithFilePicker(content);
+      setStatus("Saved. Opening rankings...", "success");
+      window.location.href = "../index.html";
+      return;
     } catch (pickerError) {
       if (pickerError?.name === "AbortError") {
         setStatus("Save cancelled.", "error");
         return;
       }
-      console.error("File Picker failed:", pickerError);
+      console.log("File picker save failed:", pickerError.message);
     }
 
-    // Final fallback: Manual download
+    // Final fallback: Manual download (works on all static hosts)
+    console.log("Proceeding to final fallback: manual download."); // Added for debugging
     downloadPlayersData(content);
     setStatus("Static host detected. 'players-data.js' downloaded. Upload this file to your hosting to apply changes.", "warning");
     console.warn("Server API not found. This is normal for static hosts like Render.");
+  } catch (error) {
+    console.error("Unexpected error during save:", error);
+    setStatus("An unexpected error occurred. Please check the console and try again.", "error");
   }
 }
 
@@ -622,3 +648,4 @@ logoutButton.addEventListener("click", () => {
 });
 
 restoreSession();
+  
