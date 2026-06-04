@@ -107,7 +107,7 @@ window.TIERLANDS_MODES = [
 
 window.TIERLANDS_PLAYERS = [
   {
-    "name": "ItzRealMes",
+    "name": "ItzRealMess",
     "title": "Combat Master",
     "points": 330,
     "region": "NA",
