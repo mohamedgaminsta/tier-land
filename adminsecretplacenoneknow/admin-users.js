@@ -19,7 +19,7 @@ window.TIERLANDS_ADMIN_USERS = [
   },
   {
     username: "byhju",
-    password: "mohamedlovebred ",
+    password: "mohamedlovebred",
     permissions: {
       players: true,
       modes: true,
