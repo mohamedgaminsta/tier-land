@@ -11,6 +11,27 @@ const fallbackModes = [
 ];
 
 const tierOptions = ["", "HT1", "LT1", "HT2", "LT2", "HT3", "LT3", "HT4", "LT4", "HT5", "LT5"];
+const tierScore = {
+  HT1: 70,
+  LT1: 60,
+  HT2: 55,
+  LT2: 50,
+  HT3: 40,
+  LT3: 35,
+  HT4: 25,
+  LT4: 20,
+  HT5: 10,
+  LT5: 5
+};
+const titleRanks = [
+  { min: 400, title: "Combat Grandmaster" },
+  { min: 250, title: "Combat Master" },
+  { min: 100, title: "Combat Ace" },
+  { min: 50, title: "Combat Specialist" },
+  { min: 20, title: "Combat Cadet" },
+  { min: 10, title: "Combat Novice" },
+  { min: 0, title: "Rookie" }
+];
 const iconByMode = {
   vanilla: "../images/Vanilla.webp",
   uhc: "../images/UHC.webp",
@@ -59,12 +80,10 @@ const sessionUserKey = "tierlands-admin-user";
 
 const fields = {
   name: document.querySelector("#playerNameInput"),
-  title: document.querySelector("#playerTitleInput"),
-  points: document.querySelector("#playerPointsInput"),
-  region: document.querySelector("#playerRegionInput"),
-  regionColor: document.querySelector("#playerRegionColorInput"),
-  regionTextColor: document.querySelector("#playerRegionTextColorInput")
+  region: document.querySelector("#playerRegionInput")
 };
+const calculatedPoints = document.querySelector("#calculatedPoints");
+const calculatedTitle = document.querySelector("#calculatedTitle");
 
 function cloneJSON(value) {
   return JSON.parse(JSON.stringify(value));
@@ -228,6 +247,22 @@ function ensurePlayerTiers(player) {
   });
 }
 
+function getPlayerTotalPoints(player) {
+  return state.modes
+    .filter((mode) => mode.id !== "overall")
+    .reduce((total, mode) => total + (tierScore[player.tiers && player.tiers[mode.id]] || 0), 0);
+}
+
+function getPlayerTitle(player) {
+  const points = getPlayerTotalPoints(player);
+  return titleRanks.find((rank) => points >= rank.min).title;
+}
+
+function getRegionStyle(region) {
+  const colors = state.regions[region] || {};
+  return `background: ${colors.background || "#263244"}; color: ${colors.text || "#d9e5f4"};`;
+}
+
 function renderPlayers() {
   if (!playerList) return;
   const filtered = state.players
@@ -237,8 +272,8 @@ function renderPlayers() {
   playerList.innerHTML = filtered.map(({ player, index }) => `
     <button class="admin-player-card${index === state.selectedIndex ? " active" : ""}" type="button" data-index="${index}">
       <span>${escapeHTML(player.name || `Player ${index + 1}`)}</span>
-      <b>${Number(player.points || 0)} pts</b>
-      <i>${escapeHTML(player.region || "??")}</i>
+      <b>${getPlayerTotalPoints(player)} pts</b>
+      <i style="${getRegionStyle(player.region)}">${escapeHTML(player.region || "??")}</i>
     </button>
   `).join("") || `<div class="empty-state">No players found.</div>`;
 }
@@ -255,17 +290,17 @@ function renderEditor() {
   if (!player) {
     if (editorTitle) editorTitle.textContent = "Select Player";
     if (tierInputs) tierInputs.innerHTML = "";
+    if (calculatedPoints) calculatedPoints.textContent = "0";
+    if (calculatedTitle) calculatedTitle.textContent = "Rookie";
     return;
   }
 
   ensurePlayerTiers(player);
   if (editorTitle) editorTitle.textContent = player.name || `Player ${state.selectedIndex + 1}`;
   fields.name.value = player.name || "";
-  fields.title.value = player.title || "";
-  fields.points.value = Number(player.points || 0);
   fields.region.value = player.region || "";
-  fields.regionColor.value = player.regionColor || "#263244";
-  fields.regionTextColor.value = player.regionTextColor || "#d9e5f4";
+  if (calculatedPoints) calculatedPoints.textContent = String(getPlayerTotalPoints(player));
+  if (calculatedTitle) calculatedTitle.textContent = getPlayerTitle(player);
 
   if (!tierInputs) return;
   tierInputs.innerHTML = state.modes.map((mode) => `
@@ -323,11 +358,9 @@ function getCleanData() {
 
     return {
       name: player.name || "",
-      title: player.title || "",
-      points: Number(player.points || 0),
+      title: getPlayerTitle(player),
+      points: getPlayerTotalPoints(player),
       region: player.region || "",
-      regionColor: player.regionColor || "",
-      regionTextColor: player.regionTextColor || "",
       tiers
     };
   });
@@ -353,8 +386,8 @@ function createPlayersDataFile() {
   Edit this file to manage the leaderboard.
 
   Regions can be anything short, such as NA, EU, AS, SA, AU, ME, or AF.
-  You can change region colors in TIERLANDS_REGIONS below.
-  You can also override one player's badge with regionColor and regionTextColor.
+  Region badge colors come from TIERLANDS_REGIONS below.
+  Points and combat titles are calculated automatically from tiers.
   Tiers should use: HT1, LT1, HT2, LT2, HT3, LT3, HT4, LT4, HT5, LT5.
   Leave a mode blank with "" if the player does not have a tier there.
 */
@@ -450,7 +483,7 @@ function updatePlayerField(key, value) {
   if (!hasPermission("players")) return;
   const player = selectedPlayer();
   if (!player) return;
-  player[key] = key === "points" ? Number(value || 0) : value;
+  player[key] = value;
   renderPlayers();
   renderJson();
   if (key === "name") editorTitle.textContent = value || `Player ${state.selectedIndex + 1}`;
@@ -474,7 +507,7 @@ tierInputs.addEventListener("change", (event) => {
   if (!select || !player) return;
   ensurePlayerTiers(player);
   player.tiers[select.dataset.tierMode] = select.value;
-  renderJson();
+  render();
 });
 
 searchInput.addEventListener("input", () => {
@@ -486,11 +519,9 @@ addPlayerButton.addEventListener("click", () => {
   if (!hasPermission("players")) return;
   const player = {
     name: `NewPlayer${state.players.length + 1}`,
-    title: "Ranked Player",
+    title: "Rookie",
     points: 0,
     region: "NA",
-    regionColor: "",
-    regionTextColor: "",
     tiers: {}
   };
   ensurePlayerTiers(player);
