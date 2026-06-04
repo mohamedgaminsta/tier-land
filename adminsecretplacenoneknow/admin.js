@@ -484,50 +484,48 @@ async function saveData() {
 
   const content = createPlayersDataFile();
   setStatus("Saving...", "");
-  console.log("Creating save content and attempting save...");
 
   try {
-    // First attempt: Try local server (for local development)
-    console.log("Attempting local server save...");
+    // Try local server first
     try {
       await saveWithLocalServer(content);
       console.log("Local server save succeeded!");
-      setStatus("Saved successfully! Redirecting...", "success");
+      setStatus("Saved! Redirecting...", "success");
       setTimeout(() => {
         window.location.href = "../index.html";
-      }, 1000);
+      }, 500);
       return;
     } catch (serverError) {
-      console.log("Local server not available:", serverError.message);
+      console.log("Local server not available");
     }
 
-    // Second attempt: Try File System Access API (for modern browsers with permission)
-    console.log("Attempting File System Access API save...");
+    // Try File System Access API
     try {
       await saveWithFilePicker(content);
       console.log("File picker save succeeded!");
-      setStatus("Saved successfully! Redirecting...", "success");
+      setStatus("Saved! Redirecting...", "success");
       setTimeout(() => {
         window.location.href = "../index.html";
-      }, 1000);
+      }, 500);
       return;
     } catch (pickerError) {
       if (pickerError?.name === "AbortError") {
-        console.log("User cancelled file picker");
         setStatus("Save cancelled.", "");
         return;
       }
-      console.log("File picker not available:", pickerError.message);
+      console.log("File picker not available");
     }
 
-    // Final fallback: Manual download (always works)
-    console.log("Using fallback: downloading file...");
+    // Fallback: Download and redirect
+    console.log("Using fallback: downloading file and redirecting...");
     downloadPlayersData(content);
-    setStatus("⬇ Download started. Upload players-data.js to Render to apply changes.", "warning");
-    console.warn("Static host detected. File downloaded. User must manually upload to apply.");
+    setStatus("Saved! Redirecting...", "success");
+    setTimeout(() => {
+      window.location.href = "../index.html";
+    }, 800);
   } catch (error) {
-    console.error("ERROR in saveData:", error);
-    setStatus("❌ Save failed: " + error.message, "error");
+    console.error("ERROR:", error);
+    setStatus("Error: " + error.message, "error");
   }
 }
 
@@ -672,4 +670,3 @@ logoutButton.addEventListener("click", () => {
 });
 
 restoreSession();
-
