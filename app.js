@@ -15,17 +15,27 @@ const modes = Array.isArray(window.TIERLANDS_MODES) && window.TIERLANDS_MODES.le
   : defaultModes;
 
 const tierScore = {
-  HT1: 100,
-  LT1: 92,
-  HT2: 84,
-  LT2: 76,
-  HT3: 68,
-  LT3: 60,
-  HT4: 52,
-  LT4: 44,
-  HT5: 36,
-  LT5: 28
+  HT1: 70,
+  LT1: 60,
+  HT2: 55,
+  LT2: 50,
+  HT3: 40,
+  LT3: 35,
+  HT4: 25,
+  LT4: 20,
+  HT5: 10,
+  LT5: 5
 };
+
+const titleRanks = [
+  { min: 400, title: "Combat Grandmaster" },
+  { min: 250, title: "Combat Master" },
+  { min: 100, title: "Combat Ace" },
+  { min: 50, title: "Combat Specialist" },
+  { min: 20, title: "Combat Cadet" },
+  { min: 10, title: "Combat Novice" },
+  { min: 0, title: "Rookie" }
+];
 
 const tierClass = {
   HT1: "tier-gold",
@@ -101,14 +111,25 @@ function getPlayerModeTier(player, modeId) {
 
 function getRegionStyle(player) {
   const defaults = regionColors[player.region] || {};
-  const background = player.regionColor || defaults.background || "#263244";
-  const text = player.regionTextColor || defaults.text || "#d9e5f4";
+  const background = defaults.background || "#263244";
+  const text = defaults.text || "#d9e5f4";
   return `background: ${background}; color: ${text};`;
+}
+
+function getPlayerTotalPoints(player) {
+  return modes
+    .filter((mode) => mode.id !== "overall")
+    .reduce((total, mode) => total + (tierScore[getPlayerModeTier(player, mode.id)] || 0), 0);
+}
+
+function getPlayerTitle(player) {
+  const points = getPlayerTotalPoints(player);
+  return titleRanks.find((rank) => points >= rank.min).title;
 }
 
 function getPlayerScore(player, modeId) {
   if (modeId === "overall") {
-    return Number(player.points || 0);
+    return getPlayerTotalPoints(player);
   }
 
   return tierScore[getPlayerModeTier(player, modeId)] || 0;
@@ -121,7 +142,7 @@ function getVisiblePlayers() {
     .sort((a, b) => {
       const scoreDelta = getPlayerScore(b, activeMode) - getPlayerScore(a, activeMode);
       if (scoreDelta !== 0) return scoreDelta;
-      return Number(b.points || 0) - Number(a.points || 0);
+      return getPlayerTotalPoints(b) - getPlayerTotalPoints(a);
     });
 }
 
@@ -160,6 +181,7 @@ function renderPlayers() {
   visiblePlayers.forEach((player, index) => {
     const modeTier = getPlayerModeTier(player, activeMode);
     const playerName = getPlayerName(player, index);
+    const points = getPlayerTotalPoints(player);
     const row = document.createElement("article");
     row.className = "player-row";
     row.dataset.playerName = playerName.toLowerCase();
@@ -169,7 +191,7 @@ function renderPlayers() {
       </div>
       <div class="player-cell">
         <strong>${escapeHTML(playerName)}</strong>
-        <span>${escapeHTML(player.title || "Ranked Player")} (${Number(player.points || 0)} points)</span>
+        <span>${escapeHTML(getPlayerTitle(player))} (${points} points)</span>
       </div>
       <div class="region-cell">
         <span class="region-badge ${regionClass[player.region] || "region-default"}" style="${getRegionStyle(player)}">${escapeHTML(player.region || "??")}</span>
