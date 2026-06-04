@@ -4,6 +4,7 @@ Double-click `run.bat` on Windows to open the site with local save support.
 You can still open `index.html` directly, but browser security may block direct admin saving.
 
 Admin data manager: open `adminsecretplacenoneknow/index.html`, or visit `/adminsecretplacenoneknow/` after publishing to your domain.
+If your host opens `/adminsecretplacenoneknow` without the final slash, the admin page redirects to the slash URL so the login scripts load correctly.
 Default admin login is in `adminsecretplacenoneknow/admin-users.js`.
 
 ```text
@@ -12,6 +13,8 @@ password: changeme
 ```
 
 Change that file to add users and set permissions for `players`, `modes`, and `save`.
+
+Note: the published static site can show the admin editor, but it cannot write changes back into GitHub by itself. The Save button will download a fresh `players-data.js` unless you add a real backend API.
 
 ## Editing Players
 
