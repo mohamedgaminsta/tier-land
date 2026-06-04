@@ -61,6 +61,45 @@
 
         <div id="playerList" class="player-list" aria-live="polite"></div>
       </section>
+
+      <section id="points" class="points-system" aria-labelledby="pointsTitle">
+        <div class="points-system-head">
+          <p class="eyebrow">Point System</p>
+          <h2 id="pointsTitle">Points are calculated from tiers.</h2>
+          <p>Each ranked tier in a game mode adds points to the player's total. Overall rankings sort by that automatic total.</p>
+        </div>
+
+        <div class="points-layout">
+          <div class="points-panel">
+            <h3>Tier Values</h3>
+            <div class="tier-points-grid" aria-label="Tier point values">
+              <span><b>HT1</b><strong>70</strong></span>
+              <span><b>LT1</b><strong>60</strong></span>
+              <span><b>HT2</b><strong>55</strong></span>
+              <span><b>LT2</b><strong>50</strong></span>
+              <span><b>HT3</b><strong>40</strong></span>
+              <span><b>LT3</b><strong>35</strong></span>
+              <span><b>HT4</b><strong>25</strong></span>
+              <span><b>LT4</b><strong>20</strong></span>
+              <span><b>HT5</b><strong>10</strong></span>
+              <span><b>LT5</b><strong>5</strong></span>
+            </div>
+          </div>
+
+          <div class="points-panel">
+            <h3>Combat Titles</h3>
+            <div class="title-rank-list" aria-label="Combat title thresholds">
+              <span><b>Combat Grandmaster</b><strong>400+ pts</strong></span>
+              <span><b>Combat Master</b><strong>250+ pts</strong></span>
+              <span><b>Combat Ace</b><strong>100+ pts</strong></span>
+              <span><b>Combat Specialist</b><strong>50+ pts</strong></span>
+              <span><b>Combat Cadet</b><strong>20+ pts</strong></span>
+              <span><b>Combat Novice</b><strong>10+ pts</strong></span>
+              <span><b>Rookie</b><strong>0-9 pts</strong></span>
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
 
     <footer id="footer" class="footer">
@@ -75,7 +114,7 @@
   <dialog id="infoDialog" class="modal">
     <form method="dialog">
       <h3>Rankings Information</h3>
-      <p><strong></strong> points, and mode tiers. Tiers use HT1 through LT5, with HT1 as the highest rank.</p>
+      <p>Overall points are calculated automatically from mode tiers. HT1 is worth 70 points, LT5 is worth 5 points, and unranked modes add 0 points.</p>
       <button class="dialog-button" value="close">Close</button>
     </form>
   </dialog>
