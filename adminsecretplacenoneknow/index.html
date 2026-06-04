@@ -57,7 +57,7 @@
         <div>
           <p class="eyebrow">TierLands Data Manager</p>
           <h1>Admin leaderboard editor.</h1>
-          <p class="hero-copy">Modify players, points, regions, tiers, and game modes. Press Save to update the ranking system directly.</p>
+          <p class="hero-copy">Modify players, regions, tiers, and game modes. Points and combat titles are calculated automatically from each player's tiers.</p>
         </div>
       </section>
 
@@ -94,34 +94,21 @@
               <input id="playerNameInput" type="text" autocomplete="off">
             </label>
 
+            <div class="admin-calculated-row" aria-live="polite">
+              <span>
+                <small>Total points</small>
+                <b id="calculatedPoints">0</b>
+              </span>
+              <span>
+                <small>Combat title</small>
+                <b id="calculatedTitle">Rookie</b>
+              </span>
+            </div>
+
             <label class="admin-field">
-              <span>Title</span>
-              <input id="playerTitleInput" type="text" autocomplete="off">
+              <span>Region</span>
+              <input id="playerRegionInput" type="text" maxlength="4" autocomplete="off">
             </label>
-
-            <div class="admin-form-row">
-              <label class="admin-field">
-                <span>Points</span>
-                <input id="playerPointsInput" type="number" min="0" step="1">
-              </label>
-
-              <label class="admin-field">
-                <span>Region</span>
-                <input id="playerRegionInput" type="text" maxlength="4" autocomplete="off">
-              </label>
-            </div>
-
-            <div class="admin-form-row">
-              <label class="admin-field">
-                <span>Region badge</span>
-                <input id="playerRegionColorInput" type="color" value="#263244">
-              </label>
-
-              <label class="admin-field">
-                <span>Region text</span>
-                <input id="playerRegionTextColorInput" type="color" value="#d9e5f4">
-              </label>
-            </div>
 
             <div class="admin-tier-grid" id="tierInputs"></div>
           </form>
