@@ -2,8 +2,8 @@
   Edit this file to manage the leaderboard.
 
   Regions can be anything short, such as NA, EU, AS, SA, AU, ME, or AF.
-  You can change region colors in TIERLANDS_REGIONS below.
-  You can also override one player's badge with regionColor and regionTextColor.
+  Region badge colors come from TIERLANDS_REGIONS below.
+  Points and combat titles are calculated automatically from tiers.
   Tiers should use: HT1, LT1, HT2, LT2, HT3, LT3, HT4, LT4, HT5, LT5.
   Leave a mode blank with "" if the player does not have a tier there.
 */
@@ -108,11 +108,9 @@ window.TIERLANDS_MODES = [
 window.TIERLANDS_PLAYERS = [
   {
     "name": "ItzRealMess",
-    "title": "Combat Master",
-    "points": 330,
+    "title": "Combat Grandmaster",
+    "points": 470,
     "region": "NA",
-    "regionColor": "",
-    "regionTextColor": "",
     "tiers": {
       "overall": "HT3",
       "vanilla": "HT1",
@@ -127,11 +125,9 @@ window.TIERLANDS_PLAYERS = [
   },
   {
     "name": "coldified",
-    "title": "Combat Master",
-    "points": 326,
+    "title": "Combat Grandmaster",
+    "points": 455,
     "region": "EU",
-    "regionColor": "",
-    "regionTextColor": "",
     "tiers": {
       "overall": "LT1",
       "vanilla": "LT3",
@@ -146,11 +142,9 @@ window.TIERLANDS_PLAYERS = [
   },
   {
     "name": "Swight",
-    "title": "Combat Master",
-    "points": 290,
+    "title": "Combat Grandmaster",
+    "points": 455,
     "region": "NA",
-    "regionColor": "",
-    "regionTextColor": "",
     "tiers": {
       "overall": "HT3",
       "vanilla": "LT3",
@@ -165,11 +159,9 @@ window.TIERLANDS_PLAYERS = [
   },
   {
     "name": "janeky",
-    "title": "Combat Master",
-    "points": 260,
+    "title": "Combat Grandmaster",
+    "points": 440,
     "region": "EU",
-    "regionColor": "",
-    "regionTextColor": "",
     "tiers": {
       "overall": "LT3",
       "vanilla": "HT4",
@@ -184,11 +176,9 @@ window.TIERLANDS_PLAYERS = [
   },
   {
     "name": "BlvckWlf",
-    "title": "Combat Ace",
-    "points": 226,
+    "title": "Combat Master",
+    "points": 395,
     "region": "EU",
-    "regionColor": "",
-    "regionTextColor": "",
     "tiers": {
       "overall": "HT2",
       "vanilla": "LT3",
@@ -203,11 +193,9 @@ window.TIERLANDS_PLAYERS = [
   },
   {
     "name": "Mohamed",
-    "title": "DiasMP Champion",
-    "points": 410,
+    "title": "Combat Grandmaster",
+    "points": 485,
     "region": "NA",
-    "regionColor": "",
-    "regionTextColor": "",
     "tiers": {
       "overall": "HT1",
       "vanilla": "HT2",
