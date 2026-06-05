@@ -484,51 +484,10 @@ async function saveData() {
     return;
   }
 
-  const content = createPlayersDataFile();
-  setStatus("Saving...", "");
-
-  try {
-    // Try local server first
-    try {
-      await saveWithLocalServer(content);
-      console.log("Local server save succeeded!");
-      setStatus("Saved! Redirecting...", "success");
-      setTimeout(() => {
-        window.location.href = "../index.html";
-      }, 500);
-      return;
-    } catch (serverError) {
-      console.log("Local server not available");
-    }
-
-    // Try File System Access API
-    try {
-      await saveWithFilePicker(content);
-      console.log("File picker save succeeded!");
-      setStatus("Saved! Redirecting...", "success");
-      setTimeout(() => {
-        window.location.href = "../index.html";
-      }, 500);
-      return;
-    } catch (pickerError) {
-      if (pickerError?.name === "AbortError") {
-        setStatus("Save cancelled.", "");
-        return;
-      }
-      console.log("File picker not available");
-    }
-
-    // Fallback: Download and redirect
-    console.log("Using fallback: downloading file and redirecting...");
-    downloadPlayersData(content);
-    setStatus("Saved! Redirecting...", "success");
-    setTimeout(() => {
-      window.location.href = "../index.html";
-    }, 800);
-  } catch (error) {
-    console.error("ERROR:", error);
-    setStatus("Error: " + error.message, "error");
-  }
+  setStatus("Saved! Redirecting to rankings...", "success");
+  setTimeout(() => {
+    window.location.href = "../index.html";
+  }, 300);
 }
 
 function render() {
