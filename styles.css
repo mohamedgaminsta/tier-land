@@ -957,6 +957,42 @@ h1 {
   line-height: 1;
 }
 
+.admin-welcome-panel {
+  min-height: calc(100vh - 7rem);
+  display: grid;
+  place-items: center;
+  padding: 2rem 0;
+}
+
+.admin-welcome-box {
+  width: min(28rem, 100%);
+  display: grid;
+  gap: 1.2rem;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 1rem;
+  background: rgba(15, 23, 34, .94);
+  box-shadow: var(--shadow);
+}
+
+.admin-welcome-box h1 {
+  margin-bottom: .4rem;
+  font-size: clamp(1.8rem, 5vw, 2.8rem);
+  line-height: 1;
+}
+
+.admin-welcome-box .hero-copy {
+  margin: 0;
+  color: var(--muted-2);
+  line-height: 1.55;
+}
+
+.admin-welcome-actions {
+  display: grid;
+  gap: .8rem;
+  margin-top: .4rem;
+}
+
 .admin-status,
 .admin-save-note {
   margin: 0;
