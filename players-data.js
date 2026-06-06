@@ -107,7 +107,7 @@ window.TIERLANDS_MODES = [
 
 window.TIERLANDS_PLAYERS = [
   {
-    "name": "douxminis",
+    "name": "mimoepd",
     "title": "Combat Grandmaster",
     "points": 470,
     "region": "NA",

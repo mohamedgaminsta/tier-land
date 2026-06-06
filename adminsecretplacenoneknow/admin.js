@@ -69,6 +69,7 @@ const saveButtons = [document.querySelector("#saveDataButton"), document.querySe
 const previewDataButton = document.querySelector("#previewDataButton");
 const saveStatus = document.querySelector("#saveStatus");
 const loginPanel = document.querySelector("#loginPanel");
+const welcomePanel = document.querySelector("#welcomePanel");
 const loginForm = document.querySelector("#loginForm");
 const loginUsernameInput = document.querySelector("#loginUsernameInput");
 const loginPasswordInput = document.querySelector("#loginPasswordInput");
@@ -181,6 +182,7 @@ function applyAuthState() {
   const signedIn = Boolean(state.currentUser);
   document.body.classList.toggle("admin-locked", !signedIn);
   if (loginPanel) loginPanel.hidden = signedIn;
+  if (welcomePanel) welcomePanel.hidden = signedIn;
   if (logoutButton) logoutButton.hidden = !signedIn;
   if (adminUserBadge) {
     adminUserBadge.hidden = !signedIn;
@@ -188,7 +190,7 @@ function applyAuthState() {
   }
 
   if (adminShell) {
-    adminShell.querySelectorAll("main > section:not(.admin-login-panel)").forEach((section) => {
+    adminShell.querySelectorAll("main > section:not(.admin-login-panel):not(.admin-welcome-panel)").forEach((section) => {
       section.hidden = !signedIn;
     });
   }
@@ -482,50 +484,21 @@ async function saveData() {
     return;
   }
 
-  const content = createPlayersDataFile();
-  setStatus("Saving...", "");
-
   try {
-    // Try local server first
-    try {
-      await saveWithLocalServer(content);
-      console.log("Local server save succeeded!");
-      setStatus("Saved! Redirecting...", "success");
-      setTimeout(() => {
-        window.location.href = "../index.html";
-      }, 500);
-      return;
-    } catch (serverError) {
-      console.log("Local server not available");
-    }
-
-    // Try File System Access API
-    try {
-      await saveWithFilePicker(content);
-      console.log("File picker save succeeded!");
-      setStatus("Saved! Redirecting...", "success");
-      setTimeout(() => {
-        window.location.href = "../index.html";
-      }, 500);
-      return;
-    } catch (pickerError) {
-      if (pickerError?.name === "AbortError") {
-        setStatus("Save cancelled.", "");
-        return;
-      }
-      console.log("File picker not available");
-    }
-
-    // Fallback: Download and redirect
-    console.log("Using fallback: downloading file and redirecting...");
-    downloadPlayersData(content);
-    setStatus("Saved! Redirecting...", "success");
+    setStatus("Saving...", "");
+    const content = createPlayersDataFile();
+    
+    // Save via server endpoint
+    await saveWithLocalServer(content);
+    console.log("Successfully saved");
+    
+    setStatus("Saved! Redirecting to rankings...", "success");
     setTimeout(() => {
       window.location.href = "../index.html";
-    }, 800);
+    }, 1000);
   } catch (error) {
-    console.error("ERROR:", error);
-    setStatus("Error: " + error.message, "error");
+    console.error("Save failed:", error);
+    setStatus(`Save failed: ${error.message}`, "error");
   }
 }
 
@@ -668,5 +641,23 @@ logoutButton.addEventListener("click", () => {
   setLoggedInUser(null);
   if (loginUsernameInput) loginUsernameInput.focus();
 });
+
+// Welcome panel event listeners
+const goToRankingsButton = document.querySelector("#goToRankingsButton");
+const loginToEditButton = document.querySelector("#loginToEditButton");
+
+if (goToRankingsButton) {
+  goToRankingsButton.addEventListener("click", () => {
+    window.location.href = "../index.html";
+  });
+}
+
+if (loginToEditButton) {
+  loginToEditButton.addEventListener("click", () => {
+    if (welcomePanel) welcomePanel.hidden = true;
+    if (loginPanel) loginPanel.hidden = false;
+    if (loginUsernameInput) loginUsernameInput.focus();
+  });
+}
 
 restoreSession();

@@ -49,6 +49,7 @@ try {
     $context = $listener.GetContext()
     $request = $context.Request
     $response = $context.Response
+    $responseSent = $false
 
     try {
       if ($request.HttpMethod -eq "POST" -and $request.Url.AbsolutePath -eq "/api/save") {
@@ -58,17 +59,20 @@ try {
 
         if ([string]::IsNullOrWhiteSpace($content) -or $content -notmatch "window\.TIERLANDS_PLAYERS") {
           Send-Text $response 400 "Invalid leaderboard data."
+          $responseSent = $true
           continue
         }
 
         $target = Join-Path $root "players-data.js"
         [System.IO.File]::WriteAllText($target, $content, $utf8NoBom)
         Send-Text $response 200 "{""ok"":true}" "application/json; charset=utf-8"
+        $responseSent = $true
         continue
       }
 
       if ($request.HttpMethod -ne "GET") {
         Send-Text $response 405 "Method not allowed."
+        $responseSent = $true
         continue
       }
 
@@ -82,6 +86,7 @@ try {
 
       if (-not $fullPath.StartsWith($rootPath, [System.StringComparison]::OrdinalIgnoreCase)) {
         Send-Text $response 403 "Forbidden."
+        $responseSent = $true
         continue
       }
 
@@ -91,6 +96,7 @@ try {
 
       if (-not [System.IO.File]::Exists($fullPath)) {
         Send-Text $response 404 "Not found."
+        $responseSent = $true
         continue
       }
 
@@ -100,8 +106,19 @@ try {
       $response.ContentLength64 = $bytes.Length
       $response.OutputStream.Write($bytes, 0, $bytes.Length)
       $response.OutputStream.Close()
+      $responseSent = $true
     } catch {
-      Send-Text $response 500 $_.Exception.Message
+      if (-not $responseSent) {
+        try {
+          Send-Text $response 500 $_.Exception.Message
+        } catch {
+          Write-Host "Error sending error response: $_"
+        }
+      }
+    } finally {
+      if (-not $responseSent) {
+        $response.Close()
+      }
     }
   }
 } finally {
