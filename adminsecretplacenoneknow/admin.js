@@ -484,10 +484,28 @@ async function saveData() {
     return;
   }
 
-  setStatus("Saved! Redirecting to rankings...", "success");
-  setTimeout(() => {
-    window.location.href = "../index.html";
-  }, 300);
+  try {
+    setStatus("Saving...", "");
+    const content = createPlayersDataFile();
+    
+    // Try local server first
+    try {
+      await saveWithLocalServer(content);
+      console.log("Successfully saved via local server");
+    } catch (serverError) {
+      console.log("Local server not available, attempting download...", serverError);
+      // Fall back to download if server not running
+      await downloadPlayersData(content);
+    }
+    
+    setStatus("Saved! Redirecting to rankings...", "success");
+    setTimeout(() => {
+      window.location.href = "../index.html";
+    }, 1000);
+  } catch (error) {
+    console.error("Save failed:", error);
+    setStatus(`Save failed: ${error.message}`, "error");
+  }
 }
 
 function render() {
