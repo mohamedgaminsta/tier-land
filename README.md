@@ -20,7 +20,11 @@ Note: the published static site can show the admin editor, but it cannot write c
 
 Edit `players-data.js` to add or change players.
 
+<<<<<<< HEAD
 Change region colors globally in `window.TIERLANDS_REGIONS`. Player points and combat titles are calculated automatically from tiers.
+=======
+Change region colors globally in `window.TIERLANDS_REGIONS`.
+>>>>>>> b19ac653f15bbe715586eda9b9b40c21be9f90cc
 
 Example:
 
@@ -28,6 +32,7 @@ Example:
 {
   name: "PlayerName",
   title: "Combat Master",
+<<<<<<< HEAD
   points: 295,
   region: "EU",
   tiers: {
@@ -37,16 +42,38 @@ Example:
     mace: "HT3",
     axe: "LT2",
     pot: "LT1"
+=======
+  points: 250,
+  region: "EU",
+  regionColor: "",
+  regionTextColor: "",
+  tiers: {
+    overall: "HT2",
+    sword: "LT1",
+    mace: "HT3"
+>>>>>>> b19ac653f15bbe715586eda9b9b40c21be9f90cc
   }
 }
 ```
 
+<<<<<<< HEAD
+=======
+To give one player a custom region badge color:
+
+```js
+region: "NA",
+regionColor: "#662735",
+regionTextColor: "#ff7183",
+```
+
+>>>>>>> b19ac653f15bbe715586eda9b9b40c21be9f90cc
 Valid tiers:
 
 ```text
 HT1, LT1, HT2, LT2, HT3, LT3, HT4, LT4, HT5, LT5
 ```
 
+<<<<<<< HEAD
 Tier points:
 
 ```text
@@ -59,6 +86,8 @@ Combat titles:
 Combat Grandmaster 400+, Combat Master 250+, Combat Ace 100+, Combat Specialist 50+, Combat Cadet 20+, Combat Novice 10+, Rookie 0-9
 ```
 
+=======
+>>>>>>> b19ac653f15bbe715586eda9b9b40c21be9f90cc
 Current game modes:
 
 ```text

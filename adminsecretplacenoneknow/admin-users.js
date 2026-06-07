@@ -9,8 +9,8 @@
 
 window.TIERLANDS_ADMIN_USERS = [
   {
-    username: "admin",
-    password: "changeme",
+    username: "byhju",
+    password: "mohamedlovebred ",
     permissions: {
       players: true,
       modes: true,
